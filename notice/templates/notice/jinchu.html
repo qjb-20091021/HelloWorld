@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load sql_guolv %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link href="{% static 'css/jinchu.css' %}" rel="stylesheet" type="text/css"/>
+        <style type="text/css">
+        @JsonFormat(pattern="yyyy-MM-dd  HH:mm:ss" ,  timezone="GMT+8")
+        private  Date  createTime;
+            @import url("../../static/css/jinchu.css");
+        </style>
+        <title>Title</title>
+    </head>
+    <section class="parent">
+        <body>
+        <script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+        {% if from.errors %}
+            <p>
+                {{ from.errors|pluralize }}
+            </p>
+        {% endif %}
+        <section class="parent1">
+            <div class="title">
+                <p>车辆进出记录</p>
+             </div>
+            <div class="time">
+                <p>{{time}}</p>
+             </div>
+            <div class="lex">
+                <form action="/notice/jinchu/" method="post" >
+                    {% csrf_token %}
+                    <p>按类型显示</p>
+                    <input name="vehicle" type="checkbox" value='all_car'  >全部
+                    <input checked="checked" name="vehicle" type="checkbox" value='y_car' >月保车
+                    <input name="vehicle" type="checkbox" value='l_car' >临保车
+                    <input name="vehicle" type="checkbox" value='m_car' >免费车<br>
+                    <input class="bot" type="submit" value="确定">
+                </form>
+            </div>
+            <div class="cex">
+                <form action="/notice/jinchu/" method='post'  >
+                    {% csrf_token %}
+                    <p>按车牌查询</p>
+                    <table>
+                        {{ from.as_table }}{{ from.subject.errors }}
+                    </table>
+                    <P>
+                        <input class="bot" name="sel"  type="submit" value="查询">
+                        <input class="bot" name="del"  type="submit" value="删除">
+                    </P>
+                </form>
+            </div>
+
+            <div class="form_time">
+                <form action="/notice/jinchu/" method='post'  >
+                    {% csrf_token %}
+                    <p>按记录日期查询</p>
+                    <p style="height:14px;">
+                        <label for="date" style="font-size:12px">开始</label>
+                        <input id="date" name="startdate" type="datetime-local" value="" />
+                    </p>
+                    <p style="height:14px;">
+                        <label for="date-local1" style="font-size:12px">结束</label>
+                        <input id="date-local1" name="stopdate" type="datetime-local" value="" />
+                    </p>
+                    <input class="bot" name="sel"  type="submit" value="查询">
+                </form>
+			</div>
+        </section>
+        <section class="section2">
+            <table   class="tabe" id="tab"  >
+                <tr class="th1">
+                    <th width="60">序号</th>
+                    <th width="52">记录时间</th>
+                    <th width="80">登记车牌</th>
+                    <th width="80">识别车牌</th>
+                    <th width="80">车辆类型</th>
+                    <th width="52">入场时间</th>
+                    <th width="52">出场时间</th>
+                    <th width="52">停留天数</th>
+                    <th width="52">停留小时</th>
+                    <th width="52">停留分钟</th>
+                    <th width="43">通行卡口</th>
+                    <th width="43">通行方式</th>
+                </tr>
+
+                {%for line in aut  %}
+                    {%if line.autoid %}
+                        <tr>
+                            <td class="td1" id="id9">{{line.autoid}}</td>
+                            <td class="td1">{{line.time}}</td>
+                            <td class="td1">{{line.carnum}}</td>
+                            <td class="td1">{{line.carnumread|gl_none}}</td>
+                            <td class="td1">{{line.carattr|gl_attr:"carattr"}}</td>
+                            <td class="td1">{{line.intime}}</td>
+                            <td class="td1">{{line.outime}}</td>
+                            <td class="td1">{{line.staydays|gl_none}}</td>
+                            <td class="td1">{{line.stayhours|gl_none}}</td>
+                            <td class="td1">{{line.stayminutes|gl_none}}</td>
+                            <td class="td1">{{line.gatetype|gl_attr:"gatetype"}}</td>
+                            <td class="td1">{{line.passtype|gl_attr:"passtype"}}</td>
+                        </tr>
+                    {%endif%}
+                {% empty %}
+                {% endfor %}
+            </table>
+            <script language="JavaScript">
+                document.onmouseup = function(e) {
+                   var aa = $(e.target).closest('tr').find('#id9').text();
+                   var formdata = new FormData();
+                   formdata.append('name',aa)
+                   $.ajax({
+                        url:"/notice/jxja/",
+                        type:"POST",
+                        data:formdata,
+                        contentType:false,
+                        processData:false,
+                        headers:{"X-CSRFToken":$('[name="csrfmiddlewaretoken"]').val()},
+                        success:function (data) {
+                            $("#id1").text(data['autoid'])
+                            $("#id2").text(data['time'])
+                            $("#id3").text(data['carnum'])
+                            $("#id4").text(data['carnumread'])
+                            $("#id5").text(data['intime'])
+                            $("#id6").text(data['outime'])
+                            var ds1=data['autoid'];
+                            var dz1="/static/images/"+ds1+".png";
+                            $("#img1").attr("src",dz1)
+                        },
+                        error: function (data1) {
+                            alert(data['erro']);
+                            console.log(data)
+                        }
+                   })
+                }
+            </script>
+            <div class="navpage">
+                {% if page.has_previous %}
+                    <a aria-label="Previous" href="?page={{cust.previous_page_number}}">
+                        <span aria-hidden="true">上一页</span></a>
+                {% endif %}
+
+                {% for num in cust.paginator.page_range%}
+                    {%if num == cust.number%}
+                        <a class="gaol" href="">{{ num }}</a>
+                    {%else%}
+                        <a href="?page={{num}}">{{ num }}</a>
+                    {%endif%}
+                 {% endfor %}
+
+                 {% if cust.has_next %}
+                     <a aria-label="Next" href="?page={{cust.next_page_number}}">
+                          <span aria-hidden="true">下一页</span></a>
+                  {% endif %}
+            </div>
+        </section>
+        <div class="rig">
+            <img height="300px" id="img1" src="/static/images/img.png/" width="100%">
+            <dl>
+                <dt>上次记录号:</dt>
+                <dd class="dd" id="id1"></dd>
+                <dt>上次记录时间:</dt>
+                 <dd class="dd" id="id2"></dd>
+                <dt>车牌:</dt>
+               <dd class="dd" id="id3"></dd>
+                <dt>识别车牌:</dt>
+               <dd class="dd" id="id4"></dd>
+                <dt>上次入场时间:</dt>
+               <dd class="dd" id="id5"></dd>
+                <dt>上次出场时间:</dt>
+               <dd class="dd" id="id6"></dd>
+                <dt>缴费:</dt>
+               <dd class="dd" id="id7"></dd>
+            </dl>
+           <!--  <button>点击查看详细信息</button> -->
+        </div>
+        </body>
+    </section>
+</html>

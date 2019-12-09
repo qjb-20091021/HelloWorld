@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html class="x-admin-sm">
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta content="webkit" name="renderer">
+        <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+        <meta content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" name="viewport" />
+        <link href="{% static 'css/font.css' %}" rel="stylesheet" type="text/css"/>
+        <link href="{% static 'css/xadmin.css' %}" rel="stylesheet" type="text/css"/>
+        <style type="text/css">
+        @JsonFormat(pattern="yyyy-MM-dd  HH:mm:ss" ,  timezone="GMT+8")
+        private  Date  createTime;
+            @import url("../../static/css/jinchu.css");
+        </style>
+        <script charset="utf-8" src="./lib/layui/layui.js"></script>
+        <script src="./js/xadmin.js" type="text/javascript"></script>
+        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+        <!--[if lt IE 9]>
+          <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+          <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <blockquote class="layui-elem-quote">欢迎管理员：
+                                <span class="x-red">test</span>！当前时间:{{now}}
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">数据统计</div>
+                        <div class="layui-card-body ">
+                            <ul class="layui-row layui-col-space10 layui-this x-admin-carousel x-admin-backlog">
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a class="x-admin-backlog-body" href="javascript:;">
+                                        <h3>今日总收费</h3>
+                                        <p>
+                                            <cite>{{dayfee.0.paid}}</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a class="x-admin-backlog-body" href="javascript:;">
+                                        <h3>今日月保收费</h3>
+                                        <p>
+                                            <cite>{{dayfee.0.m_paid}}</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a class="x-admin-backlog-body" href="javascript:;">
+                                        <h3>今日临保收费</h3>
+                                        <p>
+                                            <cite>{{dayfee.0.t_paid}}</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a class="x-admin-backlog-body" href="javascript:;">
+                                        <h3>今日总收费笔数</h3>
+                                        <p>
+                                            <cite>{{dayfee.0.paid_count}}</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6">
+                                    <a class="x-admin-backlog-body" href="javascript:;">
+                                        <h3>今日总进出</h3>
+                                        <p>
+                                            <cite>{{dayjinsu.0.counts}}</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-md2 layui-col-xs6 ">
+                                    <a class="x-admin-backlog-body" href="javascript:;">
+                                        <h3>今日异常放行</h3>
+                                        <p>
+                                            <cite>{{dayjinsu.0.y_count}}</cite></p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">本月总收费
+                            <span class="layui-badge layui-bg-cyan layuiadmin-badge">{{date.month}} 月</span></div>
+                        <div class="layui-card-body  ">
+                            <p class="layuiadmin-big-font">{{monthfee.0.paid}}</p>
+                            <p>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">本月临保收费
+                            <span class="layui-badge layui-bg-cyan layuiadmin-badge">{{date.month}} 月</span></div>
+                        <div class="layui-card-body ">
+                            <p class="layuiadmin-big-font">{{monthfee.0.t_paid}}</p>
+                            <p>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">本月月保收费
+                            <span class="layui-badge layui-bg-cyan layuiadmin-badge">{{date.month}} 月</span></div>
+                        <div class="layui-card-body ">
+                            <p class="layuiadmin-big-font">{{monthfee.0.m_paid}}</p>
+                            <p>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-sm6 layui-col-md3">
+                    <div class="layui-card">
+                        <div class="layui-card-header">本月总收费笔数
+                            <span class="layui-badge layui-bg-cyan layuiadmin-badge">{{date.month}} 月</span></div>
+                        <div class="layui-card-body ">
+                            <p class="layuiadmin-big-font">{{monthfee.0.paid_count}}</p>
+                            <p>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">本地系统信息</div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table">
+                                <tbody>
+                                    <tr>
+                                        <th>停车场名称</th>
+                                        <td>{{parkname.0.refvalue}}</td></tr>
+                                    <tr>
+                                        <th>停车场地址</th>
+                                        <td>{{parkdz.0.refvalue}}</td></tr>
+                                    <tr>
+                                        <th>数据库大小</th>
+                                        <td>WINNT</td></tr>
+                                    <tr>
+                                        <th>总进出记录数</th>
+                                        <td>{{jinsu}} 条</td></tr>
+                                    <tr>
+                                        <th>总收费记录数</th>
+                                        <td>{{feesu}} 条</td></tr>
+                                    <tr>
+                                        <th>总车辆数</th>
+                                        <td>{{carsu}} 辆</td></tr>
+                                    <tr>
+                                        <th>总用户数</th>
+                                        <td>{{usesu}} 人</td></tr>
+                                    <tr>
+                                        <th>临保车档案保存时限</th>
+                                        <td>{{linbaodangan.0.refvalue}} 天</td></tr>
+                                    <tr>
+                                        <th>执行时间限制</th>
+                                        <td>30s</td></tr>
+                                    <tr>
+                                        <th>剩余空间</th>
+                                        <td>86015.2M</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">开发团队</div>
+                        <div class="layui-card-body ">
+                            <table class="layui-table">
+                                <tbody>
+                                    <tr>
+                                        <th>版权所有</th>
+                                        <td>www.bsznsmart.com
+                                            <a href="http://x.xuebingsi.com/" target="_blank">访问官网</a></td>
+                                    </tr>
+                                    <tr>
+                                        <th>开发者</th>
+                                        <td>BSZN</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <style id="welcome_style"></style>
+                <div class="layui-col-md12">
+                    <blockquote class="layui-elem-quote layui-quote-nm"></blockquote></div>
+            </div>
+        </div>
+        </div>
+    </body>
+</html>

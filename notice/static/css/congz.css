@@ -1,0 +1,137 @@
+body {
+    width: 100%;
+    height: 100%;
+    font-size:85%;
+    font-family:"微软雅黑"
+}
+
+section{
+  border: solid 0px #D1E9E9;
+}
+section section{
+    border: solid 5px #D1E9E9;
+    float: left;
+    text-align: center;
+    width: 30%;
+    border-radius: 2px;
+    height: 100%;
+    background-color:#FCFCFC;
+}
+.parent{
+  border-radius: 7px;
+  position:fixed;
+  left:500px;
+  top:100px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  height: 700px;
+  width: 600px;
+}
+.parent section:first-child{
+  height: 100%;
+  width: 100%;
+  background-color:#FCFCFC;
+}
+
+
+table{
+border: 0px solid #D1E9E9;
+border-collapse:collapse;
+width:100%;
+margin:0px;
+}
+
+.th1{
+    border: 0px solid #D1E9E9;
+    height: 60px;
+    background-color: #D1E9E9;
+    color: #3A3A3A;
+    padding: 0px;
+}
+.td1{
+border: 1px solid #D1E9E9;
+height:55px;
+vertical-align:bottom;
+padding:5px;
+text-align:center;
+}
+
+form
+{float:left;
+border: 4px  #D1E9E9;
+border-right-style:solid;
+height:365px;
+width:49%;
+padding:2px;
+background-color:#FFFFFF;
+margin:0px;
+border-radius: 0px;
+}
+
+input
+{float:left;
+border: 1px solid #D1E9E9;
+height:30px;
+width:90%;
+padding:1px;
+background-color:#FFFFFF;
+margin:0px;
+border-radius: 5px;
+font-size:18px;
+}
+label
+{float:left;
+border: px solid #D1E9E9;
+height:25px;
+width:60%;
+padding:px;
+background-color:#FFFFFF;
+margin:0px;
+font-size:15px;
+font-weight:bold;
+text-align:left;
+}
+.bot
+{float:center;
+height:38px;
+width:90px;
+padding:1px;
+background-color:#FFDC35;
+margin:13px;
+border-radius: 5px;
+font-weight:bold;
+font-size:15px;
+}
+form>p>.bot:hover {background-color: #00AEAE;}
+
+
+dl
+{float:right;
+border: px solid #D1E9E9;
+height:350px;
+width:48%;
+background-color:#FCFCFC;
+}
+
+dt
+{
+font-size:14px;
+font-weight:bold;
+text-align:left;
+vertical-align:super;
+border: px solid #D1E9E9;
+height:23px;
+width:60%;
+padding:px;
+}
+dd
+{margin:1px;
+font-size:14px;
+font-weight:bold;
+text-align:center;
+border: 1px  #D1E9E9;
+border-bottom-style:solid;
+height:23px;
+width:90%;
+}

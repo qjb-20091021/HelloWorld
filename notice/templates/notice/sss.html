@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load sql_guolv %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link href="{% static 'css/sss.css' %}" rel="stylesheet" type="text/css"/>
+        <style type="text/css">
+            @import url("../../static/css/sss.css");
+        </style>
+        <title>Title</title>
+    </head>
+    <section class="parent">
+        <body>
+        {% if from.errors %}
+            <p>
+                {{ from.errors|pluralize }}
+            </p>
+        {% endif %}
+        <section>
+            <div class="time">
+                <p>{{time}}</p>
+             </div>
+            <div class="lex">
+                <form action="/notice/index/" method="post" >
+                    {% csrf_token %}
+                    <p>按类型显示</p>
+                    <input name="vehicle" type="checkbox" value='all_car'  >全部
+                    <input checked="checked" name="vehicle" type="checkbox" value='y_car' >月保车
+                    <input name="vehicle" type="checkbox" value='l_car' >临保车
+                    <input name="vehicle" type="checkbox" value='m_car' >免费车<br>
+                    <input class="bot" type="submit" value="确定">
+                </form>
+            </div>
+            <div class="cex">
+                <form action="/notice/index/" method='post'  >
+                    {% csrf_token %}
+                    <p>按车牌查询</p>
+                    <table>
+                        {{ from.as_table }}{{ from.subject.errors }}
+                    </table>
+                    <P>
+                        <input class="bot" name="sel"  type="submit" value="查询">
+                        <input class="bot" name="del"  type="submit" value="删除">
+                    </P>
+                </form>
+            </div>
+
+            <div class="form_time">
+                <form action="/notice/index/" method='post'  >
+                    {% csrf_token %}
+                    <p>按入场日期查询</p>
+                    <p style="height:14px;">
+                        <label for="datetime-local" style="font-size:12px">开始</label>
+                        <input id="datetime-local" name="startdate" type="datetime-local" value="" />
+                    </p>
+                    <p style="height:14px;">
+                        <label for="datetime-local1" style="font-size:12px">结束</label>
+                        <input id="datetime-local1" name="stopdate" type="datetime-local" value="" />
+                    </p>
+                    <input class="bot" name="sel"  type="submit" value="查询">
+                </form>
+			</div>
+        </section>
+        <section>
+            <table   class="tabe"  >
+                <tr class="th1">
+                    <th width="60">序号</th>
+                    <th width="80">车牌</th>
+                    <th width="80">车辆类型</th>
+                    <th width="80">车型</th>
+                    <th width="52">1号有效时段开始</th>
+                    <th width="52">1号有效时段结束</th>
+                    <th width="52">2号有效时段开始</th>
+                    <th width="52">2号有效时段结束</th>
+                    <th width="43">1号剩余天数</th>
+                    <th width="43">2号剩余天数</th>
+                    <th width="38">月保收费标准</th>
+                    <th width="38">临保收费标准</th>
+                    <th width="29">入场时间</th>
+                    <th width="26">入场ID</th>
+                    <th width="29">出场时间</th>
+                    <th width="103">出场ID</th>
+                </tr>
+
+                {%for line in aut reversed %}
+                    {%if line.id %}
+                        <tr>
+                            <td class="td1">{{line.id}}</td>
+                            <td class="td1">{{line.carnum}}</td>
+                            <td class="td1">{{line.carattr|gl_attr:"carattr"}}</td>
+                            <td class="td1">{{line.carsize|gl_attr:"carsize"}}</td>
+                            <td class="td1">{{line.begin1|gl_none}}</td>
+                            <td class="td1">{{line.end1|gl_none}}</td>
+                            <td class="td1">{{line.begin2|gl_none}}</td>
+                            <td class="td1">{{line.end2|gl_none}}</td>
+                            <td class="td1">{{line.expired1}}</td>
+                            <td class="td1">{{line.expired2}}</td>
+                            <td class="td1">{{line.mpriceid}}</td>
+                            <td class="td1">{{line.tpriceid}}</td>
+                            <td class="td1">{{line.intime|gl_none}}</td>
+                            <td class="td1">{{line.inrecid}}</td>
+                            <td class="td1">{{line.outime|gl_none}}</td>
+                            <td class="td1">{{line.outrecid}}</td>
+                        </tr>
+                    {%endif%}
+                {% empty %}
+                {% endfor %}
+        </table>
+        </section>
+        </body>
+    </section>
+</html>

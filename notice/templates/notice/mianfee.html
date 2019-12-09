@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load sql_guolv %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'css/congz.css' %}" rel="stylesheet" type="text/css"/>
+        <style type="text/css">
+        @import url("../../static/css/congz.css");
+        </style>
+    <title>Title</title>
+</head>
+<body>
+  <section class="parent">
+    <section>
+      <table>
+        <tr>
+          <th class="th1" scope="col">有效期1</th>
+          <th class="th1" scope="col">有效期2</th>
+        </tr>
+        <tr>
+          <td class="td1">{{ra.0}}</td>
+          <td class="td1">{{ra.1}}</td>
+        </tr>
+        <tr>
+          <td class="td1">{{ra.2}}</td>
+          <td class="td1">{{ra.3}}</td>
+        </tr>
+        <tr>
+          <td class="td1">{{ex1}}天</td>
+          <td class="td1">{{ex2}}天</td>
+        </tr>
+        <tr>
+          <td class="td1">{{ex1|congjz}}</td>
+          <td class="td1">{{ex2|congjz}}</td>
+        </tr>
+      </table>
+
+      <form action=" " method='post'  >
+          {% csrf_token %}
+        <p >
+          <label for="carnum">车牌:</label>
+          <input id="carnum" name="carnum" type="text">
+        </p>
+        <p >
+          <label for="date">生效日期:</label>
+          <input id="date" name="date" type="date">
+        </p>
+        <p >
+          <label for="datanum">充值月数:</label>
+          <input id="datanum" name="datanum" type="text">
+        </p>
+        <p>
+          <input class="bot" id="submit2" name="tijiao" type="submit" value="提交">
+          <input class="bot" id="submit3" name="chongzhi" type="submit" value="确认充值">
+        </p>
+      </form>
+      <dl>
+         <dt>车牌:</dt>
+           <dd>{{aut.0}}</dd>
+         <dt>充值月数:</dt>
+           <dd>{{aut.2}}</dd>
+          <dt>开始日期:</dt>
+           <dd>{{aut.1}}</dd>
+          <dt>结束日期:</dt>
+           <dd>{{aut.3}}</dd>
+      </dl>
+    </section>
+  </section>
+</body>
+</html>
