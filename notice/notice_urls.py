@@ -34,7 +34,8 @@ urlpatterns = [
     url(r'^jxja-append-user/', welcome.append_user),  #新增用户的回调函数
     url(r'^indexs/', welcome.indexs),      #前端iframe要对应这里的路由，注意前端的写法是/文件夹/函数/，函数名要登记在这里，例如indexs，并且要保证唯一
     url(r'^shouye/', welcome.shouye),   #首页
-    url(r'^member-list/', welcome.member_list),  #用户列表页面
+    url(r'^member-yemian/', welcome.member_yemian),  # 用户列表页面
+    url(r'^member-list/', welcome.member_list, name='member-list'),  # 用户列表页面
     url(r'^fee-list/', welcome.fee_list),
     url(r'^linfee-list/', welcome.linfee_list),
     url(r'^yue-list/', welcome.yue_list),
@@ -52,7 +53,6 @@ urlpatterns = [
     url(r'^xianchangsys-list/', welcome.xianchangsys_list),
     url(r'^banfee-list/', welcome.banfee_list),
     url(r'^loudong-list/', welcome.loudong_list),
-    url(r'^daochu-user/', welcome.daochu_user),
     re_path(r'^images/(?P<path>.*)$', serve, {'document_root': os.path.join(BASE_DIR, 'images')}),   #图片路由
 ]
 

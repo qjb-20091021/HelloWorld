@@ -12,8 +12,6 @@ import os
 from django.core import serializers
 from . import rpc_cilent
 
-
-
 now = datetime.datetime.now()
 def indexs(request):      #主页信息页视图
     feesu=notice.models.TbCarpay.objects.all().count()
@@ -81,11 +79,31 @@ def indexs(request):      #主页信息页视图
 
 def shouye(request):                  #主页视图
     return render(request, 'notice/shouye.html')
-def member_list(request):                         #用户页面视图
+
+
+def member_yemian(request):  # 用户空页面
+    return render(request, 'notice/member-list1.html')
+
+
+def member_list(request):  # 用户页面数据
     use = notice.models.TbUser.objects.order_by("-userid")
     cust1 = notice.fenye.split_page(use, request, per_page=15)
-    c = {'use': cust1}
-    return render(request, 'notice/member-list.html', c)
+    use_list = []
+    for us in use:
+        u_dict = {}
+        u_dict['userid'] = us.userid
+        u_dict['username'] = us.username
+        u_dict['sex'] = us.sex
+        u_dict['opname'] = us.sex
+        u_dict['address'] = us.address
+        u_dict['mobile'] = us.mobile
+        u_dict['regdate'] = us.regdate
+        u_dict['placeid'] = us.placeid
+        u_dict['usertype'] = us.usertype
+        use_list.append(u_dict)
+    num = notice.models.TbUser.objects.all().count()
+    c = {"code": 0, "msg": "", "count": num, "data": use_list}
+    return JsonResponse(c, safe=False)
 
 def fee_list(request):                 #月保费表视图
     use = notice.models.TbCarpay.objects.filter(carattr=2).order_by("-time")
@@ -178,6 +196,7 @@ def jxja_chaxunuser(request):   #接受查询人员请求
         if request.is_ajax():
             if request.POST.get('username'):
                 aa=request.POST.get('username') #按姓名
+                print(aa)
                 user =notice.models.TbUser.objects.filter(username=aa).values()
                 cust6 = notice.fenye.split_page(user, request, per_page=15)
                 data_user = {'use':cust6}
@@ -195,8 +214,10 @@ def jxja_chaxunuser(request):   #接受查询人员请求
                 cust6 = notice.fenye.split_page(art, request, per_page=15)
                 data_user = {'use': cust6}
                 data = {'use': ''}#伪装回调数据其实成功后不需要
+
             if request.POST.get('userid'):  #接受删除数据信息
                 useridnum = request.POST.get('userid')
+                print(useridnum)
                 run = rpc_cilent.Data()
                 for i in useridnum.split(','):
                     sdata = run.dele_data('d','userid',int(i),'0')
@@ -217,13 +238,15 @@ def jxja_chaxunuser(request):   #接受查询人员请求
 def chaxun_user(request):  #返回人员页面axaj数据的回调页面
     return render(request,'notice/sreach/user-sreach.html',data_user)
 
-def user_add(request):   #新增人员视图
+
+def user_add(request):  #空白新增人员视图
     addid = notice.models.Addpath.objects.all()
     zjtype = notice.models.TbDict.objects.filter(item ='zjtype')
     data ={'use':addid,'zjt':zjtype}
     return render(request,'notice/append-html/user-add.html',data)
 
-def append_user(request):   #新增人员视图
+
+def append_user(request):  #提交新增人员视图
     if request.method == 'POST':
         if request.is_ajax():
             if request.POST.get('username'):
@@ -245,12 +268,6 @@ def append_user(request):   #新增人员视图
 
             else:
                 return JsonResponse({'error':'缺少用户名'},safe=False)
-
-def daochu_user(request):  #人员数据导出视图
-    if request.is_ajax():
-        use = notice.models.TbUser.objects.order_by("-userid")
-        c = {'use': use}
-    return c
 
 def loudong_list(request):  #楼栋视图
     addid = notice.models.Addpath.objects.all()
