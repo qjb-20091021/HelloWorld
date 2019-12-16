@@ -520,6 +520,9 @@ class TbDict(models.Model):
         db_table = 'tb_dict'
         unique_together = (('item', 'value'),)
 
+    def __str__(self):
+        return self.caption
+
 
 class TbGate(models.Model):
     gateid = models.IntegerField(primary_key=True)
@@ -1033,6 +1036,7 @@ class TbUser(models.Model):
     remark = models.CharField(max_length=200, blank=True, null=True)
     opname = models.CharField(max_length=20, blank=True, null=True)
 
+    # dict = models.ManyToManyField('TbDict', null=True)  #多表联合查询需要加这个字段
     class Meta:
         managed = False
         db_table = 'tb_user'

@@ -35,23 +35,36 @@
           <a class="layui-btn layui-btn-small" onclick="location.reload()" style="line-height:1.6em;margin-top:3px;float:right" title="刷新">
             <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
         </div>
+        <div class="layui-card-header">
+            <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
+            <button class="layui-btn" onclick="addloudong()"><i class="layui-icon"></i>添加</button>
+        </div>
         <div class="layui-fluid">
             <div class="layui-row layui-col-space15">
                 <div class="layui-col-md12">
                     <div class="layui-card">
                         <div class="layui-card-body layui-table-body layui-table-main">
                             <table class="layui-table layui-form">
+                                {% csrf_token %}
                                 <thead>
                                   <tr>
+                                      <th>
+                                          <input lay-filter="checkall" lay-skin="primary" name="" type="checkbox">
+                                      </th>
                                     <th>楼栋ID</th>
                                     <th>楼栋名</th>
+                                      <th>从属关系</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                 {% for line in use %}
                                       <tr id="tr1">
+                                          <td>
+                                              <input lay-skin="primary" name="" type="checkbox" value={{line.placeid}}>
+                                          </td>
                                             <td id="id4">{{line.placeid|default_if_none:" "}}</td>
                                             <td id="id5">{{line.pathname|default_if_none:" "}}</td>
+                                          <td id="id6">{{line.pathid|default_if_none:" "}}</td>
                                       </tr>
                                 {% endfor %}
                                 </tbody>
@@ -90,59 +103,77 @@
     </body>
     <script>
 
-        layui.use(['laydate','form'], function(){
-        var laydate = layui.laydate;
-        var  form = layui.form;
+        layui.use(['table','form','layer','jquery'], function(){
+                  var form = layui.form;
+                  var table = layui.table;
+                  var layer = layui.layer;
+                  var $ = layui.jquery;
+                // 监听全选
+                form.on('checkbox(checkall)', function(data){
 
-
-        // 监听全选
-        form.on('checkbox(checkall)', function(data){
-
-          if(data.elem.checked){
-            $('tbody input').prop('checked',true);
-          }else{
-            $('tbody input').prop('checked',false);
-          }
-          form.render('checkbox');
+                  if(data.elem.checked){
+                    $('tbody input').prop('checked',true);
+                  }else{
+                    $('tbody input').prop('checked',false);
+                  }
+                  form.render('checkbox');
+                });
         });
 
-        //执行一个laydate实例
-        laydate.render({
-          elem: '#start' //指定元素
-        });
+                function delAll (argument) {
+                    layui.use(['table','form','layer','jquery'], function(){
+                          var form = layui.form;
+                          var table = layui.table;
+                          var layer = layui.layer;
+                          var $ = layui.jquery;
+                        var ids = [];
+                        // 获取选中的id
+                        $('tbody input').each(function(index, el) {
+                            if($(this).prop('checked')){
+                               ids.push($(this).val())
+                            }
+                        });
 
-        //执行一个laydate实例
-        laydate.render({
-          elem: '#end' //指定元素
-        });
-        });
+                           layer.confirm('确认要删除'+ids.length+'条数据吗？',function(index){
+                            //捉到所有被选中的，发异步进行删除
+                            layer.msg('删除成功', {icon: 1});
+                            $(".layui-form-checked").not('.header').parents('tr').remove();
+                            var ts = ids.toString();   //获取表单的键值对
+                              var formdata = new FormData();   //新建对象，必须
+                                  formdata.append('placeid',ts)///添加获取到的键值对
+                              $.ajax({
+                                            url:"/notice/jxja/",  //发送地址，是uir文件中的视图值
+                                            type:"POST",
+                                            data:formdata,  //发送对象
+                                            contentType:false,
+                                            processData:false,
+                                            headers:{"X-CSRFToken":$('[name="csrfmiddlewaretoken"]').val()},//post令牌
+                                            success:function () {  //收到回调函数后的处理函数，ws是收到的回调数据
+                                            location.reload();
+                                            },
+                                            error: function (data1) {
+                                                alert('出错');
+                                                console.log(data1)
+                                            }
+                                       })
+                            });
+                    });
+                };
 
-        /*用户-删除*/
-        function member_del(obj,id){
-          layer.confirm('确认要删除吗？',function(index){
-              //发异步删除数据
-              $(obj).parents("tr").remove();
-              layer.msg('已删除!',{icon:1,time:1000});
-          });
+
+        //定义添加函数
+        function addloudong (argument) {
+            layui.use(['table','jquery','layer'],function() {
+                var layer = layui.layer;
+                var index = layer.open({
+                                title:'新增楼栋',
+                                type:2,  //设置弹出层类型
+                                area:['500px','500px'],  //设置弹出层尺寸
+                                content:'/notice/loudong-add/',    //设置页面来源，对应视图
+                                end:function(){ location.reload()}   //弹窗关闭后自动刷新页面
+                                })
+            });
         }
 
-
-
-        function delAll (argument) {
-        var ids = [];
-
-        // 获取选中的id
-        $('tbody input').each(function(index, el) {
-            if($(this).prop('checked')){
-               ids.push($(this).val())
-            }
-        });
-
-        layer.confirm('确认要删除吗？'+ids.toString(),function(index){
-            //捉到所有被选中的，发异步进行删除
-            layer.msg('删除成功', {icon: 1});
-            $(".layui-form-checked").not('.header').parents('tr').remove();
-        });
-        }
     </script>
 </html>

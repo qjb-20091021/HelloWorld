@@ -21,6 +21,10 @@ listnu = [' ', '', '50', {'username': '43333',
                         },
         str(datetime.datetime.now()),0,4]  # 新增人员的params
 
+listnd = [' ', '', '50', {'placename': '43333',
+                          },
+          str(datetime.datetime.now()), 0, 8]  # 新增人员的params
+
 listdd = ['c', '', '50',
           {
              'optype':'0'

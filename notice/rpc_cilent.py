@@ -1,13 +1,14 @@
 
 # .-*- coding:utf-8 .-*-
-import os,sys
-import time
-import pika
-import uuid
-import demjson
 import configparser
-from .import rpc_Transfertext
-from .import logoing
+import os
+import time
+import uuid
+
+import demjson
+import pika
+from . import logoing
+from . import rpc_Transfertext
 
 
 class Rpc(object):              #rpc客户端
@@ -21,11 +22,11 @@ class Rpc(object):              #rpc客户端
         self.vhost = config.get("mq_conf", "vhost")
         self.credentials = pika.PlainCredentials(config.get("mq_conf", "user"), config.get("mq_conf", "password"))
         self.Parameters = pika.ConnectionParameters(self.host, self.port, self.vhost, self.credentials, heartbeat=5,
-                                                    socket_timeout=10)
+                                                    socket_timeout=30)
         self.connection = pika.BlockingConnection(self.Parameters)  # 创建连接
-        self.channel = self.connection.channel()
-        result = self.channel.queue_declare('',exclusive=True)     #随机声明广播管道，前面的空是指使用默认路由，因为他是用掉就关的所以都是随机的
-        self.callback_queue = result.method.queue            #使用随机命名
+        self.channel = self.connection.channel()  # 创建通道，
+        result = self.channel.queue_declare('', exclusive=True)  # 随机声明广播通道，前面的空是指使用默认路由，因为他是用掉就关的所以都是随机的
+        self.callback_queue = result.method.queue  # 使用随机命名队列
         self.channel.basic_consume(on_message_callback=self.body, auto_ack=True,
                                    queue=self.callback_queue)    #消费消息，转到body
 
@@ -53,7 +54,7 @@ class Rpc(object):              #rpc客户端
 
 class Data():
     def __init__(self):
-        self.logger = logoing.log()  # 初始化logo模块
+        self.logger = logoing.log()  #初始化logo模块
     def pic(self,num,carnum):  #查询图片接口，输入参数为：表代码，车牌
         rpc = Rpc()
         Tranlist = rpc_Transfertext.listsp
@@ -62,6 +63,7 @@ class Data():
         response = rpc.conn(Tranlist)  #向本地服务器发送消息
         response = response.decode(encoding="utf-8")   #解码二进制数据
         jrow = demjson.decode(response)  #解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if jrow == 0:
             print('ok')
         if jrow == '5':
@@ -79,6 +81,7 @@ class Data():
         response = rpc.conn(Tranlist)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if len(jrow) == 0:
             self.logger.error('tcp传输失败')
         else:
@@ -94,6 +97,7 @@ class Data():
         response = rpc.conn(Tranlist)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if jrow == None:
             self.logger.error('tcp传输失败')
         else:
@@ -106,6 +110,7 @@ class Data():
         response = rpc.conn(Tranlist)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if jrow == None:
             self.logger.error('tcp传输失败')
         else:
@@ -118,6 +123,7 @@ class Data():
         response = rpc.conn(Tranlist)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if jrow == None:
             self.logger.error('tcp传输失败')
         else:
@@ -131,6 +137,7 @@ class Data():
         response = rpc.conn(Tranlist)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if jrow == None:
             self.logger.error('tcp传输失败')
         else:
@@ -143,6 +150,7 @@ class Data():
         response = rpc.conn(Tranlist)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if jrow == None:
             self.logger.error('tcp传输失败')
         else:
@@ -155,10 +163,30 @@ class Data():
         response = rpc.conn(Tranlist)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  # 关闭连接不然会越来越多导致rpc主动断联
         if jrow == None:
             self.logger.error('tcp传输失败')
         else:
             pass
+        return jrow
+
+    def newloudong(self, dict):  # 新增楼栋，placename为必填，参数类型为dict
+        rpc = Rpc()
+        Tranlist = rpc_Transfertext.listnd
+        Tranlist[3].update(dict)
+        response = rpc.conn(Tranlist)  # 向本地服务器发送消息
+        response = response.decode(encoding="utf-8")  # 解码二进制数据
+        jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        try:
+            clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  # 关闭连接不然会越来越多导致rpc主动断联
+        except ConnectionAbortedError as e:
+            print(e)
+            pass
+        finally:
+            if jrow == None:
+                self.logger.error('tcp传输失败')
+            else:
+                pass
         return jrow
 
     def Upload(self,list):  #更新部分资料，参数类型为列表,第一项时表代码，第三项返回数据数量，0为返回所有，第4项：字典类型，键是查询字段，值是条件值；这个值里只能时int类型的值，有一个必填键值optype；，第6项：删除方式2为删除更新部分，第7项：0，代表是更新事件
@@ -166,6 +194,7 @@ class Data():
         response = rpc.conn(list)  # 向本地服务器发送消息
         response = response.decode(encoding="utf-8")  # 解码二进制数据
         jrow = demjson.decode(response)  # 解码json数据，发的时候都是通过json封装发送送的，但在发送的过程中传输的都是二进制数据，所以要先解码二进制
+        clrpc = rpc.connection.close(reply_code=0, reply_text='正常关机')  #关闭连接不然会越来越多导致rpc主动断联
         if jrow == None:
             self.logger.error('tcp传输失败')
         else:
@@ -176,7 +205,7 @@ if __name__ == '__main__':
     while True:
         try:
             run = Data()
-            tu = run.sdata('d','userid','123','0')
+            tu = run.newloudong({'placeid': 10, 'pid': 1, 'placename': 'wwww2'})
             print(tu)
             time.sleep(2)
         except pika.exceptions.AMQPConnectionError as e :

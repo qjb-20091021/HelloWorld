@@ -43,7 +43,7 @@
                             <span class="x-red"> </span>性别</label>
                         <div class="layui-input-inline">
                             <input checked name="sex" title="男" type="radio" value="1">
-                            <input name="sex" title="女" type="radio" value="2" >
+                            <input name="sex" title="女" type="radio" value="2">
                             <input disabled name="sex" title="中性" type="radio" value="0">
                         </div>
                     </div>
@@ -64,6 +64,7 @@
                                 <option value={{line.value}}>{{line.caption}}</option>
                             {% endfor %}
                             </select>
+                        </div>
                     </div>
 
                     <div class="layui-form-item">
@@ -103,8 +104,8 @@
         <script>layui.use(['form', 'layer'],
             function() {
                 $ = layui.jquery;
-                var form = layui.form,
-                layer = layui.layer;
+                form = layui.form,
+                 layer = layui.layer;
 
                 //监听提交
                 form.on('submit(add)',
@@ -112,12 +113,12 @@
                   var ts = data.field;   //获取表单的键值对
                   var formdata = new FormData();   //新建对象，必须
                       formdata.append('username',ts.username)///添加获取到的键值对
-                      formdata.append('phone',ts.phone)///添加获取到的键值对
-                      formdata.append('sex',ts.sex)///添加获取到的键值对
-                      formdata.append('addaes',ts.addaes)///添加获取到的键值对
-                      formdata.append('address',ts.address)///添加获取到的键值对
-                      formdata.append('zjtype',ts.zjtype)///添加获取到的键值对
-                      formdata.append('zjnum',ts.zjnum)///添加获取到的键值对
+                      ,formdata.append('phone',ts.phone)///添加获取到的键值对
+                      ,formdata.append('sex',ts.sex)///添加获取到的键值对
+                      ,formdata.append('addaes',ts.addaes)///添加获取到的键值对
+                      ,formdata.append('address',ts.address)///添加获取到的键值对
+                      ,formdata.append('zjtype',ts.zjtype)///添加获取到的键值对
+                      ,formdata.append('zjnum',ts.zjnum)///添加获取到的键值对
                   $.ajax({
                         url:"/notice/jxja-append-user/",  //发送地址，是uir文件中的视图值
                         type:"POST",
@@ -125,24 +126,33 @@
                         contentType:false,
                         processData:false,
                         headers:{"X-CSRFToken":$('[name="csrfmiddlewaretoken"]').val()},//post令牌
-                        success:function (data) {  //收到回调函数后的处理函数，ws是收到的回调数据
-                            alert(data.type);
+                        success:function (data,layero,index) {  //收到回调函数后的处理函数，ws是收到的回调数据
+                           layer.alert(data.type,{
+                                                    icon:1,
+                                                    time:3000,
+                                                    title:'提示',
+                                                    area:['200px','200px'],
+                                                    btnAlign:'c',
+                                                    });
+                            location.reload()
                         },
                         error: function (data) {
-                            alert(data.error);
+                            layer.alert('data.error',{
+                                                    icon:0,
+                                                    time:3000,
+                                                    title:'错误',
+                                                    area:['200px','200px'],
+                                                    btnAlign:'c',
+                                                    });
                             console.log(data)
                         }
-                        });
+                    });
+
                     return false;
                 });
 
             });</script>
-        <script>var _hmt = _hmt || []; (function() {
-                var hm = document.createElement("script");
-                hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-                var s = document.getElementsByTagName("script")[0];
-                s.parentNode.insertBefore(hm, s);
-            })();</script>
+
     </body>
 
 </html>

@@ -3,7 +3,7 @@
 {% load sql_guolv %}
 <html class="x-admin-sm">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>百世智慧管理</title>
     <meta content="webkit" name="renderer">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
@@ -83,63 +83,141 @@
 <script id="toolbarDemo" type="text/html">
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>删除</button>
-        <button class="layui-btn" onclick="xadmin.open('添加用户','/notice/user-add/',500,600)"><i class="layui-icon"></i>添加
-        </button>
-        <button class="layui-btn layui-btn-normal" onclick="xadmin.open('修改资料','/notice/user-add/',500,600)"><i
-                class="iconfont">&#xe642; </i>修改
-        </button>
+        <button class="layui-btn" onclick="adduser()"><i class="layui-icon"></i>添加</button>
+        <button class="layui-btn layui-btn-normal" onclick="xiugai()"><i class="iconfont">&#xe642; </i>修改</button>
     </div>
 </script>
 
 <script>
-        layui.use(['table','laydate','form','jquery'],
+        layui.use(['table','laydate','form','jquery','layer'],
             function() {
+                    var table = layui.table;
+                    var laydate = layui.laydate;
+                    var  form = layui.form;
+                    var $ = layui.jquery;
+                    var layer = layui.layer;
+                    //渲染表格
+                    blemTable = table.render({    //渲染table
+                        method: 'get', //数据传输方式
+                        cellMinWidth: 20, //单元格最小宽度
+                        elem: '#usertable', //设置容器
+                        toolbar:'#toolbarDemo',
+                        request: {
+                                  pageName: 'page', //页码的参数名称，默认：page，这里设置的作用时给后端获取前端的设置
+                                  limitName: 'limit', //每页数据量的参数名，默认：limit
+                              },
+                       url: '{% url 'member-list' %}',//数据获取url，模拟url
+                       cols: [[                          //设置列标签、标题、宽度、是否排序等
+                            {type:'checkbox',field: '', title: 'checkID', width: 30,},
+                            {field: 'userid', title: 'ID', width: 80, sort: true,},
+                            {field: 'username', title: '姓名', },
+                            {field: 'usertype', title: '用户类型',},
+                            {field: 'sex', title:'性别',},
+                            {field: 'mobile', title: '手机',},
+                            {field: 'address', title: '地址',},
+                            {field: 'placeid', title: '楼栋',},
+                            {field: 'zjtype' , title: '证件类型',},
+                            {field: 'zjnum', title: '证件号',},
+                            {field: 'opname', title: '操作员',},
+                            {field: 'regdate', title: '记录时间',sort: true,},
+                            {field: 'sex_num', title: '性别类',sort: true,hide:true,},
+                            {field: 'placeid_num', title: '楼栋类',sort: true,hide:true,},
+                            {field: 'usertype_num', title: '类型类',sort: true,hide:true,},
+                            {field: 'zjtype_num', title: '证件类',sort: true,hide:true,},
+                        ]],
+                        page: true, //开启分页
+                        limit:18,//页默认20
+                        loading:true,  //开启等待图标
+                    });
+
+                    //执行一个laydate实例，产生日期选择插件
+                    laydate.render({
+                      elem: '#start' //指定元素
+                    });
+
+                    //执行一个laydate实例 产生日期选择插件
+                    laydate.render({
+                      elem: '#end' //指定元素
+                    });
+
+                    //监听双击行事件
+                    table.on('rowDouble(data-table)', function(obj){
+                                        var data = obj.data
+                                        var index = layer.open({
+                                                title:'修改用户资料',
+                                                type:2,  //设置弹出层类型
+                                                area:['500px','600px'],  //设置弹出层尺寸
+                                                content:'/notice/user-xiugai/',    //设置页面来源，对应视图
+                                                success: function(layero, index){     //获取页面数据
+                                                    var iframeWindow = window['layui-layer-iframe'+ index];
+                                                    layero.find('iframe').contents().find('[name="zjtype"]').val(data.zjtype_num); //赋值下拉框
+                                                    layero.find('iframe').contents().find('[name="addaes"]').val(data.placeid_num); //赋值下拉框
+                                                    layero.find('iframe').contents().find('[name="usertype"]').val(data.usertype_num); //赋值下拉框
+
+                                                    var body = layer.getChildFrame('body', index);  //获取当前页面的句柄
+                                                    body.find("#username").val(data.username);  //在body中找username，并赋值
+                                                    body.find("#phone").val(data.mobile);
+                                                    body.find("#address").val(data.address);
+                                                    body.find("#zjnum").val(data.zjnum);
+                                                    body.find("#userid").val(data.userid);
+                                                    body.find("input[name=sex][value=1]").attr("checked", data.sex_num == 1 ? true : false); //赋值单选框
+                                                    body.find("input[name=sex][value=2]").attr("checked", data.sex_num == 2 ? true : false); //赋值单选框
+                                                    iframeWindow = layero.find('iframe')[0].contentWindow;  //获取弹出页面的对象，然后刷新，不然不能显示，特别是单选框，折磨我好久啊
+                                                    iframeWindow.layui.form.render();  //赋值后要刷新，不然不能显示，特别是单选框，折磨我好久啊
+                                                    },
+                                                end:function(){ location.reload()}   //弹窗关闭后自动刷新页面
+                                                })
+                    obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click'); //标注选中样式
+                    });
+
+            //提交查询
+            form.on('submit(sreach)', function(data){
+              var ts = data.field;   //获取表单的键值对
+              var formdata = new FormData();   //新建对象，必须
+                  formdata.append('username',ts.username)///添加获取到的键值对
+                  formdata.append('start',ts.start)
+                  formdata.append('end',ts.end)
+              $.ajax({
+                            url:"/notice/jxja/",  //发送地址，是uir文件中的视图值
+                            type:"POST",
+                            data:formdata,  //发送对象
+                            contentType:false,
+                            processData:false,
+                            headers:{"X-CSRFToken":$('[name="csrfmiddlewaretoken"]').val()},//post令牌
+                            success:function () {  //收到回调函数后的处理函数，ws是收到的回调数据
+                            var tab = $("tbody");
+                            $("html").html("");   //清空表格主体
+                            $("html").load("/notice/chaxun-user/")
+                            },
+                            error: function (data1) {
+                                alert(data1.error);
+                                console.log(data1)
+                            }
+                       });
+              return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        });  //此处结束上段函数
+
+        //定义删除函数
+        function delAll (argument) {
+            var ids = [];
+            // 获取选中的id
+            layui.use(['table','jquery'],function() {
                 var table = layui.table;
-                var laydate = layui.laydate;
-                var  form = layui.form;
                 var $ = layui.jquery;
-                //渲染表格
-                blemTable = table.render({    //渲染table
-                    method: 'get',//数据传输方式为post
-                    height: 'full-20',//高度为屏幕高度-20
-                    cellMinWidth: 40,//单元格最小宽度
-                    elem: '#usertable',//设置容器
-                    toolbar:'#toolbarDemo',
-                   url: '{% url 'member-list' %}',//数据获取url
-                   cols: [[                          //设置列标签、标题、宽度、是否排序等
-                        {type:'checkbox',field: '', title: 'checkID', width: 30,},
-                        {field: 'userid', title: 'ID', width: 80, sort: true,},
-                        {field: 'username', title: '姓名', width: 120,},
-                        {field: '{{ usertype|gl_attr:"usertype" }}', title: '用户类型',},
-                        {field: 'sex', title: '性别',},
-                         {field: 'mobile', title: '手机',},
-                         {field: 'address', title: '地址',},
-                        {field: '{{ placeid|gl_loudong }}', title: '楼栋',},
-                        {field: 'opname', title: '操作员',},
-                        {field: 'regdate', title: '记录时间',sort: true,},
-                    ]],
-                    page: true,//开启分页
-                    limit: 20,//分页默认为30
+                var checkStatus = table.checkStatus('usertable');  //要通过这个函数来获取选中的数据，监听复选框没用
+                     var data = checkStatus.data;
+                    for (da in data){
+                    ids.push(data[da].userid);
+                    }
                 });
 
-                //执行一个laydate实例
-                laydate.render({
-                  elem: '#start' //指定元素
-                });
-
-                //执行一个laydate实例
-                laydate.render({
-                  elem: '#end' //指定元素
-                });
-                });  //此处结束上段函数
-
-                //提交查询
-                form.on('submit(sreach)', function(data){
-                  var ts = data.field;   //获取表单的键值对
+            layer.confirm('确认要删除'+ids.length+'条数据吗？',function(index){
+                //捉到所有被选中的，发异步进行删除
+                layer.msg('删除成功', {icon: 1});
+                var ts = ids.toString();   //获取表单的键值对
                   var formdata = new FormData();   //新建对象，必须
-                      formdata.append('username',ts.username)///添加获取到的键值对
-                      formdata.append('start',ts.start)
-                      formdata.append('end',ts.end)
+                      formdata.append('userid',ts)///添加获取到的键值对
                   $.ajax({
                                 url:"/notice/jxja/",  //发送地址，是uir文件中的视图值
                                 type:"POST",
@@ -148,56 +226,71 @@
                                 processData:false,
                                 headers:{"X-CSRFToken":$('[name="csrfmiddlewaretoken"]').val()},//post令牌
                                 success:function () {  //收到回调函数后的处理函数，ws是收到的回调数据
-                                var tab = $("tbody");
-                                $("html").html("");   //清空表格主体
-                                $("html").load("/notice/chaxun-user/")
+                                location.reload()   //执行完删除后刷新页面
                                 },
                                 error: function (data1) {
-                                    alert(data1.error);
+                                    alert('出错');
                                     console.log(data1)
                                 }
-                           });
-                  return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    })
+            });
+        }
+
+        //定义修改函数
+        function xiugai (argument) {
+            var ids = [];
+            // 获取选中的id
+            layui.use(['table','jquery','layer'],function() {
+                var table = layui.table;
+                var $ = layui.jquery;
+                var layer = layui.layer;
+                var checkStatus = table.checkStatus('usertable');  //要通过这个函数来获取选中的数据，监听复选框没用
+                     var data = checkStatus.data;
+                    for (da in data){
+                    udata = data[da];
+                    ids.push(udata);
+                    }
                 });
 
-                //监听多选
-                function delAll (argument) {
-                    var ids = [];
+            var index = layer.open({
+                                title:'修改用户资料',
+                                type:2,  //设置弹出层类型
+                                area:['500px','600px'],  //设置弹出层尺寸
+                                content:'/notice/user-xiugai/',    //设置页面来源，对应视图
+                                success: function(layero, index){     //获取页面数据
+                                    var iframeWindow = window['layui-layer-iframe'+ index];
+                                    layero.find('iframe').contents().find('[name="zjtype"]').val(udata.zjtype_num); //赋值下拉框
+                                    layero.find('iframe').contents().find('[name="placeid"]').val(udata.placeid_num); //赋值下拉框
+                                    layero.find('iframe').contents().find('[name="usertype"]').val(udata.usertype_num); //赋值下拉框
 
-                    // 获取选中的id
-                    layui.use(['table','jquery'],function() {
-                        var table = layui.table;
-                        var $ = layui.jquery;
-                        var checkStatus = table.checkStatus('usertable');  //要通过这个函数来获取选中的数据，监听复选框没用
-                             var data = checkStatus.data;
-                            for (da in data){
-                            ids.push(data[da].userid);
-                            }
-                        });
+                                    var body = layer.getChildFrame('body', index);  //获取当前页面的句柄
+                                    body.find("#username").val(udata.username);  //在body中找username，并赋值
+                                    body.find("#phone").val(udata.mobile);
+                                    body.find("#address").val(udata.address);
+                                    body.find("#zjnum").val(udata.zjnum);
+                                    body.find("#userid").val(udata.userid);
+                                    body.find("input[name=sex][value=1]").attr("checked", udata.sex_num == 1 ? true : false); //赋值单选框
+                                    body.find("input[name=sex][value=2]").attr("checked", udata.sex_num == 2 ? true : false); //赋值单选框
+                                    iframeWindow = layero.find('iframe')[0].contentWindow;  //获取弹出页面的对象，然后刷新，不然不能显示，特别是单选框，折磨我好久啊
+                                    iframeWindow.layui.form.render();  //赋值后要刷新，不然不能显示，特别是单选框，折磨我好久啊
+                                    },
+                                end:function(){ location.reload()}   //弹窗关闭后自动刷新页面
+                                })
+        }
+         //定义添加函数
+        function adduser (argument) {
+            layui.use(['table','jquery','layer'],function() {
+                var layer = layui.layer;
+                var index = layer.open({
+                                title:'修改用户资料',
+                                type:2,  //设置弹出层类型
+                                area:['500px','600px'],  //设置弹出层尺寸
+                                content:'/notice/user-add/',    //设置页面来源，对应视图
+                                end:function(){ location.reload()}   //弹窗关闭后自动刷新页面
+                                })
+            });
+        }
 
-                    layer.confirm('确认要删除'+ids.length+'条数据吗？',function(index){
-                        //捉到所有被选中的，发异步进行删除
-                        layer.msg('删除成功', {icon: 1});
-                        var ts = ids.toString();   //获取表单的键值对
-                          var formdata = new FormData();   //新建对象，必须
-                              formdata.append('userid',ts)///添加获取到的键值对
-                          $.ajax({
-                                        url:"/notice/jxja/",  //发送地址，是uir文件中的视图值
-                                        type:"POST",
-                                        data:formdata,  //发送对象
-                                        contentType:false,
-                                        processData:false,
-                                        headers:{"X-CSRFToken":$('[name="csrfmiddlewaretoken"]').val()},//post令牌
-                                        success:function () {  //收到回调函数后的处理函数，ws是收到的回调数据
-                                        location.reload()
-                                        },
-                                        error: function (data1) {
-                                            alert('出错');
-                                            console.log(data1)
-                                        }
-                            })
-                    });
-                }
 
 </script>
 
